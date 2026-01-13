@@ -11,6 +11,7 @@ const Storage = {
         totalAttempts: 0,
         streak: 0,
         difficulty: 'medium',
+        soundEnabled: true,
         enabledTopics: {
             'addition': true,
             'subtraction': true,

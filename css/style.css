@@ -821,6 +821,34 @@ body {
     color: white;
 }
 
+/* Sound Toggle */
+.sound-toggle-btn {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 20px;
+    background: var(--success);
+    color: white;
+    border: none;
+    border-radius: 10px;
+    font-size: 1rem;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.sound-toggle-btn:hover {
+    transform: scale(1.02);
+}
+
+.sound-toggle-btn.sound-off {
+    background: #999;
+}
+
+.sound-icon {
+    font-size: 1.3rem;
+}
+
 .topic-toggles {
     display: grid;
     grid-template-columns: repeat(2, 1fr);

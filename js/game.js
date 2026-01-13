@@ -10,6 +10,7 @@ const Game = {
     // Initialize game
     init() {
         this.state = Storage.load();
+        GameAudio.init(this.state.soundEnabled);
         this.setupEventListeners();
         this.updateUI();
         this.showScreen('home-screen');
@@ -52,6 +53,9 @@ const Game = {
 
         document.getElementById('reset-progress').addEventListener('click', () => this.resetProgress());
 
+        // Sound toggle
+        document.getElementById('sound-toggle').addEventListener('click', () => this.toggleSound());
+
         // Pokedex detail close
         document.getElementById('close-detail').addEventListener('click', () => {
             document.getElementById('pokemon-detail').classList.add('hidden');
@@ -90,6 +94,14 @@ const Game = {
         document.querySelectorAll('.topic-toggle input').forEach(checkbox => {
             checkbox.checked = this.state.enabledTopics[checkbox.dataset.topic];
         });
+
+        // Sound toggle
+        const soundToggle = document.getElementById('sound-toggle');
+        if (soundToggle) {
+            soundToggle.querySelector('.sound-icon').textContent = this.state.soundEnabled ? '🔊' : '🔇';
+            soundToggle.querySelector('.sound-text').textContent = this.state.soundEnabled ? 'Sound ON' : 'Sound OFF';
+            soundToggle.classList.toggle('sound-off', !this.state.soundEnabled);
+        }
     },
 
     // Start playing
@@ -540,6 +552,8 @@ const Game = {
         const feedback = document.getElementById('feedback-message');
 
         if (correct) {
+            GameAudio.playCorrect();
+
             // Calculate pokeballs
             let pokeballs = this.isFirstAttempt ? 2 : 1;
 
@@ -572,6 +586,7 @@ const Game = {
             }, 1500);
 
         } else {
+            GameAudio.playIncorrect();
             feedback.textContent = 'Try again!';
             feedback.className = 'feedback error';
             Storage.recordAnswer(this.state, this.currentTopic, false);
@@ -592,6 +607,7 @@ const Game = {
 
         if (encounter && Math.random() < 0.3) { // 30% chance when affordable
             this.pendingEncounter = encounter;
+            GameAudio.playEncounter();
             const alert = document.getElementById('wild-pokemon-alert');
             alert.classList.remove('hidden');
         }
@@ -628,6 +644,8 @@ const Game = {
         const pokemon = this.pendingEncounter;
         if (!pokemon || this.state.pokeballs < pokemon.cost) return;
 
+        GameAudio.playThrow();
+
         // Deduct pokeballs
         this.state.pokeballs -= pokemon.cost;
         Storage.save(this.state);
@@ -648,6 +666,7 @@ const Game = {
 
             // Catch Pokemon
             Storage.catchPokemon(this.state, pokemon.id);
+            GameAudio.playCapture();
 
             // Show result
             document.getElementById('caught-pokemon-name').textContent = pokemon.name;
@@ -688,6 +707,7 @@ const Game = {
 
         if (canEvolve) {
             Storage.evolvePokemon(this.state, pokemonId);
+            GameAudio.playEvolution();
             const newName = PokemonData.getCurrentName(pokemonId, pokemonState.stage);
 
             // Show evolution notification
@@ -800,6 +820,19 @@ const Game = {
         this.state.difficulty = difficulty;
         Storage.save(this.state);
         this.updateUI();
+    },
+
+    // Toggle sound
+    toggleSound() {
+        this.state.soundEnabled = !this.state.soundEnabled;
+        GameAudio.setEnabled(this.state.soundEnabled);
+        Storage.save(this.state);
+        this.updateUI();
+
+        // Play a test sound when enabling
+        if (this.state.soundEnabled) {
+            GameAudio.playCorrect();
+        }
     },
 
     // Toggle topic
