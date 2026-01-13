@@ -3,7 +3,11 @@ import react from '@vitejs/plugin-react'
 import tailwindcss from '@tailwindcss/vite'
 import { VitePWA } from 'vite-plugin-pwa'
 
+// Use /math-game-for-kids/ for GitHub Pages, / for Vercel
+const base = process.env.GITHUB_PAGES ? '/math-game-for-kids/' : '/';
+
 export default defineConfig({
+  base,
   server: {
     allowedHosts: ['host.docker.internal'],
   },
@@ -32,5 +36,4 @@ export default defineConfig({
       }
     })
   ],
-  base: '/math-game-for-kids/', // For GitHub Pages deployment
 })
