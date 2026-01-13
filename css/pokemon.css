@@ -1,0 +1,262 @@
+/* Pokemon Sprites and Specific Styling */
+
+/* Using Pokemon sprites from PokeAPI (publicly available) */
+/* Base URL: https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/ */
+
+.pokemon-pikachu {
+    background-image: url('https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/25.png');
+}
+
+.pokemon-raichu {
+    background-image: url('https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/26.png');
+}
+
+.pokemon-squirtle {
+    background-image: url('https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/7.png');
+}
+
+.pokemon-wartortle {
+    background-image: url('https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/8.png');
+}
+
+.pokemon-blastoise {
+    background-image: url('https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/9.png');
+}
+
+.pokemon-oddish {
+    background-image: url('https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/43.png');
+}
+
+.pokemon-gloom {
+    background-image: url('https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/44.png');
+}
+
+.pokemon-vileplume {
+    background-image: url('https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/45.png');
+}
+
+.pokemon-porygon {
+    background-image: url('https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/137.png');
+}
+
+.pokemon-porygon2 {
+    background-image: url('https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/233.png');
+}
+
+.pokemon-porygon-z {
+    background-image: url('https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/474.png');
+}
+
+.pokemon-magnemite {
+    background-image: url('https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/81.png');
+}
+
+.pokemon-magneton {
+    background-image: url('https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/82.png');
+}
+
+.pokemon-magnezone {
+    background-image: url('https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/462.png');
+}
+
+.pokemon-abra {
+    background-image: url('https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/63.png');
+}
+
+.pokemon-kadabra {
+    background-image: url('https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/64.png');
+}
+
+.pokemon-alakazam {
+    background-image: url('https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/65.png');
+}
+
+.pokemon-exeggcute {
+    background-image: url('https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/102.png');
+}
+
+.pokemon-exeggutor {
+    background-image: url('https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/103.png');
+}
+
+.pokemon-bulbasaur {
+    background-image: url('https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/1.png');
+}
+
+.pokemon-ivysaur {
+    background-image: url('https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/2.png');
+}
+
+.pokemon-venusaur {
+    background-image: url('https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/3.png');
+}
+
+/* Pokemon Type Colors */
+.type-electric {
+    background-color: #F7D02C;
+}
+
+.type-water {
+    background-color: #6390F0;
+}
+
+.type-grass {
+    background-color: #7AC74C;
+}
+
+.type-poison {
+    background-color: #A33EA1;
+}
+
+.type-normal {
+    background-color: #A8A77A;
+}
+
+.type-psychic {
+    background-color: #F95587;
+}
+
+.type-steel {
+    background-color: #B7B7CE;
+}
+
+/* Shake Animation for Wrong Answers */
+@keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    20%, 60% { transform: translateX(-10px); }
+    40%, 80% { transform: translateX(10px); }
+}
+
+.shake {
+    animation: shake 0.5s ease;
+}
+
+/* Sparkle Animation for Correct Answers */
+@keyframes sparkle {
+    0% { transform: scale(1); filter: brightness(1); }
+    50% { transform: scale(1.1); filter: brightness(1.3); }
+    100% { transform: scale(1); filter: brightness(1); }
+}
+
+.sparkle {
+    animation: sparkle 0.5s ease;
+}
+
+/* Evolution Glow Animation */
+@keyframes evolutionGlow {
+    0% { filter: brightness(1) hue-rotate(0deg); }
+    50% { filter: brightness(2) hue-rotate(180deg); }
+    100% { filter: brightness(1) hue-rotate(360deg); }
+}
+
+.evolving {
+    animation: evolutionGlow 2s ease;
+}
+
+/* Pokeball Wiggle for Capture */
+@keyframes wiggle {
+    0%, 100% { transform: rotate(0deg); }
+    25% { transform: rotate(-20deg); }
+    75% { transform: rotate(20deg); }
+}
+
+.wiggle {
+    animation: wiggle 0.3s ease 3;
+}
+
+/* Stars/Sparkles Effect */
+.star-burst {
+    position: absolute;
+    pointer-events: none;
+}
+
+.star-burst::before,
+.star-burst::after {
+    content: '★';
+    position: absolute;
+    font-size: 1.5rem;
+    color: gold;
+    animation: starFly 1s ease forwards;
+}
+
+@keyframes starFly {
+    0% { opacity: 1; transform: translate(0, 0) scale(1); }
+    100% { opacity: 0; transform: translate(var(--tx, 50px), var(--ty, -50px)) scale(0); }
+}
+
+/* Topic-specific colors */
+.topic-addition { background-color: #F7D02C; }
+.topic-subtraction { background-color: #6390F0; }
+.topic-skip-counting { background-color: #7AC74C; }
+.topic-shapes { background-color: #F95587; }
+.topic-grouping { background-color: #B7B7CE; }
+.topic-place-value { background-color: #F95587; }
+.topic-fractions { background-color: #7AC74C; }
+.topic-word-problems { background-color: #7AC74C; }
+
+/* Shape SVGs for Shape Recognition */
+.shape {
+    width: 100px;
+    height: 100px;
+    display: inline-block;
+}
+
+.shape-circle {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    background: #EE1515;
+    border: 3px solid #333;
+}
+
+.shape-square {
+    width: 80px;
+    height: 80px;
+    background: #3B4CCA;
+    border: 3px solid #333;
+}
+
+.shape-triangle {
+    width: 0;
+    height: 0;
+    border-left: 45px solid transparent;
+    border-right: 45px solid transparent;
+    border-bottom: 80px solid #FFDE00;
+}
+
+.shape-rectangle {
+    width: 100px;
+    height: 60px;
+    background: #4CAF50;
+    border: 3px solid #333;
+}
+
+.shape-pentagon {
+    width: 80px;
+    height: 76px;
+    background: #9C27B0;
+    clip-path: polygon(50% 0%, 100% 38%, 82% 100%, 18% 100%, 0% 38%);
+}
+
+.shape-hexagon {
+    width: 80px;
+    height: 70px;
+    background: #FF9800;
+    clip-path: polygon(25% 0%, 75% 0%, 100% 50%, 75% 100%, 25% 100%, 0% 50%);
+}
+
+.shape-oval {
+    width: 100px;
+    height: 60px;
+    border-radius: 50%;
+    background: #00BCD4;
+    border: 3px solid #333;
+}
+
+.shape-diamond {
+    width: 60px;
+    height: 80px;
+    background: #E91E63;
+    transform: rotate(45deg);
+    margin: 10px;
+}
