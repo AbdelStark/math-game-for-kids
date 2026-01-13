@@ -531,16 +531,15 @@ const Game = {
         const correct = selectedAnswer === this.currentPuzzle.correctAnswer ||
                        String(selectedAnswer) === String(this.currentPuzzle.correctAnswer);
 
-        // Disable all buttons
-        document.querySelectorAll('.option-btn').forEach(btn => {
-            btn.disabled = true;
-            if (btn.textContent === String(this.currentPuzzle.correctAnswer) ||
-                btn.textContent.toLowerCase() === String(this.currentPuzzle.correctAnswer).toLowerCase()) {
-                btn.classList.add('correct');
-            }
-        });
-
-        if (!correct) {
+        if (correct) {
+            // Disable all buttons and show correct
+            document.querySelectorAll('.option-btn').forEach(btn => {
+                btn.disabled = true;
+            });
+            button.classList.add('correct');
+        } else {
+            // Only disable the wrong button, let user try again
+            button.disabled = true;
             button.classList.add('incorrect');
         }
 
