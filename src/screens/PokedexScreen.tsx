@@ -1,18 +1,19 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useTranslation } from 'react-i18next';
 import { Button, Panel, PokemonSprite } from '../components/common';
 import { useGameStore } from '../stores/gameStore';
 import {
   getAllPokemon,
   getCurrentEvolutionName,
   getEvolutionProgress,
-  TOPIC_NAMES,
 } from '../data/pokemon';
 import { cn } from '../utils/cn';
 
 export function PokedexScreen() {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const pokemonStates = useGameStore((s) => s.pokemon);
   const topicMastery = useGameStore((s) => s.topicMastery);
 
@@ -35,7 +36,7 @@ export function PokedexScreen() {
         <Button variant="secondary" size="sm" onClick={() => navigate('/')}>
           ←
         </Button>
-        <h1 className="font-pixel text-sm text-gba-dark">Pokedex</h1>
+        <h1 className="font-pixel text-sm text-gba-dark">{t('pokedex.title')}</h1>
       </div>
 
       {/* Pokemon grid */}
@@ -68,7 +69,7 @@ export function PokedexScreen() {
                 silhouette={!isCaught}
               />
               <span className="font-pixel text-[8px] text-gba-dark truncate w-full text-center">
-                {isCaught ? getCurrentEvolutionName(pokemon.id, state.stage) : '???'}
+                {isCaught ? getCurrentEvolutionName(pokemon.id, state.stage) : t('pokedex.unknown')}
               </span>
             </motion.button>
           );
@@ -109,7 +110,7 @@ export function PokedexScreen() {
 
                 {/* Topic */}
                 <span className="font-pixel text-[10px] px-3 py-1 bg-gba-tan rounded-full text-gba-brown">
-                  {TOPIC_NAMES[selectedData.pokemon.topic]}
+                  {t(`topics.${selectedData.pokemon.topic}`)}
                 </span>
 
                 {/* Evolution chain */}
@@ -171,13 +172,13 @@ export function PokedexScreen() {
                         selectedData.mastery.correct,
                         selectedData.mastery.consecutiveCorrect
                       ).needed}{' '}
-                      to evolve
+                      {t('pokedex.toEvolve')}
                     </p>
                   </div>
                 )}
 
                 {selectedData.state.stage >= selectedData.pokemon.evolution.length && (
-                  <p className="font-pixel text-xs text-pokemon-yellow">Fully Evolved!</p>
+                  <p className="font-pixel text-xs text-pokemon-yellow">{t('pokedex.fullyEvolved')}</p>
                 )}
               </div>
             </Panel>
@@ -189,9 +190,7 @@ export function PokedexScreen() {
       {!selectedData && (
         <Panel className="flex-1 flex items-center justify-center">
           <p className="font-pixel text-xs text-gba-brown text-center">
-            Tap a caught Pokemon
-            <br />
-            to see details
+            {t('pokedex.tapToSee')}
           </p>
         </Panel>
       )}

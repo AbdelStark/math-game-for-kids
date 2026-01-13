@@ -1,11 +1,13 @@
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
+import { useTranslation } from 'react-i18next';
 import { PokeballButton, Button, PokeballCount } from '../components/common';
 import { useGameStore } from '../stores/gameStore';
 import { PokemonSprite } from '../components/common/PokemonSprite';
 
 export function HomeScreen() {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const pokeballs = useGameStore((state) => state.pokeballs);
   const pokemon = useGameStore((state) => state.pokemon);
 
@@ -39,10 +41,10 @@ export function HomeScreen() {
         {/* Title */}
         <div className="text-center">
           <h1 className="font-pixel text-lg text-pokemon-blue text-shadow-pokemon leading-relaxed">
-            Pokemon
+            {t('app.title')}
           </h1>
           <h2 className="font-pixel text-sm text-pokemon-red text-shadow-pokemon mt-1">
-            Math Adventure
+            {t('app.subtitle')}
           </h2>
         </div>
 
@@ -60,7 +62,6 @@ export function HomeScreen() {
               pokemonId="pikachu"
               stage={1}
               size="xl"
-              silhouette
               animate
             />
           )}
@@ -69,7 +70,7 @@ export function HomeScreen() {
         {/* Play button */}
         <PokeballButton
           onClick={() => navigate('/play')}
-          aria-label="Start playing"
+          aria-label={t('home.play')}
         />
       </motion.div>
 
@@ -86,7 +87,7 @@ export function HomeScreen() {
           className="w-full"
           onClick={() => navigate('/pokedex')}
         >
-          Pokedex
+          {t('home.pokedex')}
         </Button>
         <Button
           variant="secondary"
@@ -94,7 +95,7 @@ export function HomeScreen() {
           className="w-full"
           onClick={() => navigate('/settings')}
         >
-          Settings
+          {t('home.settings')}
         </Button>
       </motion.div>
     </div>

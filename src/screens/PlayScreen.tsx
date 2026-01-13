@@ -1,17 +1,54 @@
 import { useState, useCallback, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useTranslation } from 'react-i18next';
 import { Button, Panel, PokeballCount, StreakDisplay } from '../components/common';
 import { useGameStore, selectEnabledTopics, getEnabledTopicsList } from '../stores/gameStore';
 import { generatePuzzle } from '../data/puzzles';
-import { TOPIC_NAMES, getRandomEncounter } from '../data/pokemon';
+import { getRandomEncounter } from '../data/pokemon';
 import type { Puzzle } from '../data/puzzles/types';
 import type { Topic } from '../stores/types';
 import GameAudio from '../utils/audio';
 import { cn } from '../utils/cn';
 
+// Helper to translate puzzle questions
+function translateQuestion(
+  puzzle: Puzzle,
+  t: (key: string, params?: Record<string, string | number>) => string
+): string {
+  if (!puzzle.questionKey) {
+    return 'question' in puzzle ? (puzzle.question as string) : '';
+  }
+
+  // Build params with translated nested values
+  const params: Record<string, string | number> = { ...puzzle.questionParams };
+
+  // Translate item names for word problems
+  if (params.item && typeof params.item === 'string') {
+    params.item = t(`items.${params.item}`);
+  }
+
+  // Translate shape names
+  if (params.shape && typeof params.shape === 'string') {
+    params.shape = t(`shapes.${params.shape}`);
+  }
+
+  // Translate place names
+  if (params.place && typeof params.place === 'string') {
+    params.place = t(`places.${params.place}`);
+  }
+
+  // Translate fraction names
+  if (params.fraction && typeof params.fraction === 'string') {
+    params.fraction = t(`fractions.${params.fraction}`);
+  }
+
+  return t(puzzle.questionKey, params);
+}
+
 export function PlayScreen() {
   const navigate = useNavigate();
+  const { t } = useTranslation();
 
   // Store state
   const pokeballs = useGameStore((s) => s.pokeballs);
@@ -67,8 +104,8 @@ export function PlayScreen() {
     recordAnswer(currentTopic!, true);
 
     const message = streakBonus
-      ? `Correct! +${total} Pokeballs (Streak Bonus!)`
-      : `Correct! +${total} Pokeballs`;
+      ? `${t('play.correct')} ${t('play.pokeballsBonus', { count: total })}`
+      : `${t('play.correct')} ${t('play.pokeballs', { count: total })}`;
 
     setFeedback({ type: 'success', message });
 
@@ -97,7 +134,7 @@ export function PlayScreen() {
     GameAudio.playIncorrect();
     recordAnswer(currentTopic!, false);
     setIsFirstAttempt(false);
-    setFeedback({ type: 'error', message: 'Try again!' });
+    setFeedback({ type: 'error', message: t('play.tryAgain') });
   }, [recordAnswer, currentTopic]);
 
   // Check fill-blank answer
@@ -162,7 +199,7 @@ export function PlayScreen() {
         className="text-center mb-4"
       >
         <span className="font-pixel text-[10px] px-3 py-1 bg-pokemon-blue text-white rounded-full">
-          {currentTopic && TOPIC_NAMES[currentTopic]}
+          {currentTopic && t(`topics.${currentTopic}`)}
         </span>
       </motion.div>
 
@@ -178,9 +215,9 @@ export function PlayScreen() {
           >
             <Panel className="p-6">
               {/* Question */}
-              {puzzle.type !== 'fill-blank' && puzzle.type !== 'pattern-fill' && 'question' in puzzle && (
+              {puzzle.type !== 'fill-blank' && puzzle.type !== 'pattern-fill' && (puzzle.questionKey || 'question' in puzzle) && (
                 <p className="font-pixel text-sm text-center mb-6 leading-relaxed">
-                  {puzzle.question}
+                  {translateQuestion(puzzle, t)}
                 </p>
               )}
 
@@ -208,7 +245,7 @@ export function PlayScreen() {
                       autoFocus
                     />
                     <Button onClick={checkFillBlank} disabled={!inputValue}>
-                      Check
+                      {t('play.check')}
                     </Button>
                   </div>
                 </div>
@@ -241,7 +278,7 @@ export function PlayScreen() {
                       autoFocus
                     />
                     <Button onClick={checkFillBlank} disabled={!inputValue}>
-                      Check
+                      {t('play.check')}
                     </Button>
                   </div>
                 </div>
@@ -250,8 +287,8 @@ export function PlayScreen() {
               {/* Fill in blank */}
               {(puzzle.type === 'fill-blank' || puzzle.type === 'pattern-fill') && 'display' in puzzle && (
                 <div className="text-center">
-                  {'question' in puzzle && puzzle.question && (
-                    <p className="font-pixel text-xs mb-4">{puzzle.question}</p>
+                  {(puzzle.questionKey || ('question' in puzzle && puzzle.question)) && (
+                    <p className="font-pixel text-xs mb-4">{translateQuestion(puzzle, t)}</p>
                   )}
                   <div className="font-pixel text-xl mb-4 flex items-center justify-center gap-2 flex-wrap">
                     {puzzle.display.split('__').map((part, i, arr) => (
@@ -277,7 +314,7 @@ export function PlayScreen() {
                     ))}
                   </div>
                   <Button onClick={checkFillBlank} disabled={!inputValue}>
-                    Check Answer
+                    {t('play.checkAnswer')}
                   </Button>
                 </div>
               )}
@@ -285,22 +322,29 @@ export function PlayScreen() {
               {/* Multiple choice */}
               {puzzle.type === 'multiple-choice' && 'options' in puzzle && (
                 <div className="grid grid-cols-2 gap-3">
-                  {puzzle.options.map((option) => (
-                    <Button
-                      key={String(option)}
-                      variant="secondary"
-                      onClick={() => checkMultipleChoice(option)}
-                      disabled={disabledOptions.has(option) || feedback?.type === 'success'}
-                      className={cn(
-                        disabledOptions.has(option) && 'opacity-50 bg-error/20',
-                        feedback?.type === 'success' &&
-                          (option === puzzle.correctAnswer || String(option) === String(puzzle.correctAnswer)) &&
-                          'bg-success/30 border-success'
-                      )}
-                    >
-                      {String(option)}
-                    </Button>
-                  ))}
+                  {puzzle.options.map((option) => {
+                    // Translate shape names for shape topic
+                    const displayOption = puzzle.topic === 'shapes' && typeof option === 'string'
+                      ? t(`shapes.${option}`)
+                      : String(option);
+
+                    return (
+                      <Button
+                        key={String(option)}
+                        variant="secondary"
+                        onClick={() => checkMultipleChoice(option)}
+                        disabled={disabledOptions.has(option) || feedback?.type === 'success'}
+                        className={cn(
+                          disabledOptions.has(option) && 'opacity-50 bg-error/20',
+                          feedback?.type === 'success' &&
+                            (option === puzzle.correctAnswer || String(option) === String(puzzle.correctAnswer)) &&
+                            'bg-success/30 border-success'
+                        )}
+                      >
+                        {displayOption}
+                      </Button>
+                    );
+                  })}
                 </div>
               )}
 
@@ -319,7 +363,7 @@ export function PlayScreen() {
                           disabled={disabledOptions.has(option) || feedback?.type === 'success'}
                           className="capitalize"
                         >
-                          {option}
+                          {t(`shapes.${option}`)}
                         </Button>
                       ))}
                     </div>
@@ -335,7 +379,7 @@ export function PlayScreen() {
                         autoFocus
                       />
                       <Button onClick={checkFillBlank} disabled={!inputValue}>
-                        Check
+                        {t('play.check')}
                       </Button>
                     </div>
                   )}
@@ -356,7 +400,7 @@ export function PlayScreen() {
                       autoFocus
                     />
                     <Button onClick={checkFillBlank} disabled={!inputValue}>
-                      Check
+                      {t('play.check')}
                     </Button>
                   </div>
                 </div>
@@ -440,9 +484,9 @@ export function PlayScreen() {
             className="fixed bottom-20 left-4 right-4"
           >
             <Panel className="text-center p-4" variant="dark">
-              <p className="font-pixel text-xs mb-3">A wild Pokemon appeared!</p>
+              <p className="font-pixel text-xs mb-3">{t('play.wildAppeared')}</p>
               <Button variant="pokeball" onClick={goToEncounter}>
-                Go catch it!
+                {t('play.goCatch')}
               </Button>
             </Panel>
           </motion.div>

@@ -37,7 +37,7 @@ function generateOptions(correct: number, count: number, min: number, max: numbe
   return shuffle(Array.from(options));
 }
 
-// Shape definitions
+// Shape definitions - use translation keys for names
 const SHAPES: ShapeData[] = [
   { name: 'circle', sides: 0, corners: 0, class: 'shape-circle' },
   { name: 'square', sides: 4, corners: 4, class: 'shape-square' },
@@ -47,13 +47,13 @@ const SHAPES: ShapeData[] = [
   { name: 'hexagon', sides: 6, corners: 6, class: 'shape-hexagon' },
 ];
 
-// Fraction definitions
+// Fraction definitions - use translation keys for names
 const FRACTIONS: FractionData[] = [
-  { name: 'one half', numerator: 1, denominator: 2, display: '1/2' },
-  { name: 'one third', numerator: 1, denominator: 3, display: '1/3' },
-  { name: 'one quarter', numerator: 1, denominator: 4, display: '1/4' },
-  { name: 'two thirds', numerator: 2, denominator: 3, display: '2/3' },
-  { name: 'three quarters', numerator: 3, denominator: 4, display: '3/4' },
+  { name: 'oneHalf', numerator: 1, denominator: 2, display: '1/2' },
+  { name: 'oneThird', numerator: 1, denominator: 3, display: '1/3' },
+  { name: 'oneQuarter', numerator: 1, denominator: 4, display: '1/4' },
+  { name: 'twoThirds', numerator: 2, denominator: 3, display: '2/3' },
+  { name: 'threeQuarters', numerator: 3, denominator: 4, display: '3/4' },
 ];
 
 // Visual items for puzzles
@@ -99,6 +99,8 @@ function generateAddition(range: DifficultyRange): Puzzle {
     return {
       type: 'multiple-choice',
       question: `What is ${a} + ${b}?`,
+      questionKey: 'puzzles.whatIs',
+      questionParams: { expression: `${a} + ${b}` },
       options,
       correctAnswer: answer,
       topic: 'addition',
@@ -108,6 +110,8 @@ function generateAddition(range: DifficultyRange): Puzzle {
     return {
       type: 'visual-counting',
       question: 'How many stars are there?',
+      questionKey: 'puzzles.howManyItem',
+      questionParams: { item: '⭐' },
       objects: Array(count).fill('⭐'),
       correctAnswer: count,
       topic: 'addition',
@@ -155,6 +159,8 @@ function generateSubtraction(range: DifficultyRange): Puzzle {
     return {
       type: 'multiple-choice',
       question: `What is ${a} - ${b}?`,
+      questionKey: 'puzzles.whatIs',
+      questionParams: { expression: `${a} - ${b}` },
       options,
       correctAnswer: answer,
       topic: 'subtraction',
@@ -182,6 +188,7 @@ function generateSkipCounting(range: DifficultyRange): Puzzle {
       type: 'pattern-fill',
       display: `${sequence.join(', ')}, __`,
       question: 'What comes next?',
+      questionKey: 'puzzles.whatComesNext',
       correctAnswer: answer,
       topic: 'skip-counting',
     };
@@ -190,6 +197,8 @@ function generateSkipCounting(range: DifficultyRange): Puzzle {
     return {
       type: 'multiple-choice',
       question: `Counting by ${skipBy}s: ${sequence.join(', ')}, ?`,
+      questionKey: 'puzzles.countingBy',
+      questionParams: { skip: skipBy, sequence: sequence.join(', ') },
       options,
       correctAnswer: answer,
       topic: 'skip-counting',
@@ -210,6 +219,7 @@ function generateShapes(): Puzzle {
     return {
       type: 'shape-identify',
       question: 'What shape is this?',
+      questionKey: 'puzzles.whatShape',
       shapeClass: shape.class,
       options,
       correctAnswer: shape.name,
@@ -222,6 +232,8 @@ function generateShapes(): Puzzle {
       return {
         type: 'shape-properties',
         question: `How many sides does a ${shape.name} have?`,
+        questionKey: 'puzzles.howManySides',
+        questionParams: { shape: shape.name },
         shapeClass: shape.class,
         correctAnswer: shape.sides,
         topic: 'shapes',
@@ -230,6 +242,8 @@ function generateShapes(): Puzzle {
       return {
         type: 'shape-properties',
         question: `How many corners does a ${shape.name} have?`,
+        questionKey: 'puzzles.howManyCorners',
+        questionParams: { shape: shape.name },
         shapeClass: shape.class,
         correctAnswer: shape.corners,
         topic: 'shapes',
@@ -244,6 +258,8 @@ function generateShapes(): Puzzle {
     return {
       type: 'multiple-choice',
       question: `Which shape has ${sidesCount} sides?`,
+      questionKey: 'puzzles.whichHasSides',
+      questionParams: { count: sidesCount },
       options,
       correctAnswer: correctShape.name,
       topic: 'shapes',
@@ -265,6 +281,8 @@ function generateGrouping(): Puzzle {
     return {
       type: 'visual-groups',
       question: `${groups} groups of ${itemsPerGroup}. How many in total?`,
+      questionKey: 'puzzles.groupsOf',
+      questionParams: { groups, items: itemsPerGroup },
       groups,
       itemsPerGroup,
       item,
@@ -276,6 +294,8 @@ function generateGrouping(): Puzzle {
     return {
       type: 'multiple-choice',
       question: `${groups} groups of ${itemsPerGroup} = ?`,
+      questionKey: 'puzzles.groupsOf',
+      questionParams: { groups, items: itemsPerGroup },
       visualGroups: { groups, itemsPerGroup, item },
       options: options.map(String),
       correctAnswer: total,
@@ -308,6 +328,8 @@ function generatePlaceValue(range: DifficultyRange): Puzzle {
     return {
       type: 'place-value-identify',
       question: `In ${number}, what digit is in the ${place} place?`,
+      questionKey: 'puzzles.whatDigitInPlace',
+      questionParams: { number, place },
       number,
       place,
       correctAnswer: answer,
@@ -319,15 +341,23 @@ function generatePlaceValue(range: DifficultyRange): Puzzle {
     const ones = digits.length >= 3 ? digits[2] : digits[1];
 
     let question: string;
+    let questionKey: string;
+    let questionParams: Record<string, number>;
     if (hundreds > 0) {
       question = `${hundreds} hundreds + ${tens} tens + ${ones} ones = ?`;
+      questionKey = 'puzzles.buildNumberHTO';
+      questionParams = { hundreds, tens, ones };
     } else {
       question = `${tens} tens + ${ones} ones = ?`;
+      questionKey = 'puzzles.buildNumberTO';
+      questionParams = { tens, ones };
     }
 
     return {
       type: 'fill-blank',
       question,
+      questionKey,
+      questionParams,
       display: question.replace('?', '__'),
       correctAnswer: number,
       topic: 'place-value',
@@ -337,6 +367,8 @@ function generatePlaceValue(range: DifficultyRange): Puzzle {
     return {
       type: 'multiple-choice',
       question: `What is the ones digit in ${number}?`,
+      questionKey: 'puzzles.onesDigit',
+      questionParams: { number },
       options: options.map(String),
       correctAnswer: digits[digits.length - 1],
       topic: 'place-value',
@@ -354,6 +386,7 @@ function generateFractions(): Puzzle {
     return {
       type: 'fraction-visual',
       question: 'What fraction is shaded?',
+      questionKey: 'puzzles.whatFraction',
       fraction,
       correctAnswer: fraction.display,
       topic: 'fractions',
@@ -365,6 +398,8 @@ function generateFractions(): Puzzle {
     return {
       type: 'multiple-choice',
       question: `Which shows ${fraction.name}?`,
+      questionKey: 'puzzles.whichShowsFraction',
+      questionParams: { fraction: fraction.name },
       fractionOptions: shuffle([fraction, ...otherFractions]),
       options,
       correctAnswer: fraction.display,
@@ -378,31 +413,36 @@ function generateWordProblem(range: DifficultyRange): Puzzle {
   const maxNum = Math.min(range.max, 50);
 
   type ProblemTemplate = {
-    template: (a: number, b: number, item: string) => string;
+    questionKey: string;
     operation: 'add' | 'subtract';
     items: string[];
+    useItem: boolean;
   };
 
   const templates: ProblemTemplate[] = [
     {
-      template: (a, b, item) => `You have ${a} ${item}. You get ${b} more. How many do you have now?`,
+      questionKey: 'puzzles.wordYouHaveGet',
       operation: 'add',
       items: ['apples', 'cookies', 'toys', 'stickers', 'pencils'],
+      useItem: true,
     },
     {
-      template: (a, b, item) => `You have ${a} ${item}. You give away ${b}. How many are left?`,
+      questionKey: 'puzzles.wordYouHaveGive',
       operation: 'subtract',
       items: ['candies', 'marbles', 'cards', 'crayons', 'books'],
+      useItem: true,
     },
     {
-      template: (a, b) => `${a} birds are in a tree. ${b} more fly in. How many birds are there now?`,
+      questionKey: 'puzzles.wordBirdsTree',
       operation: 'add',
       items: ['birds'],
+      useItem: false,
     },
     {
-      template: (a, b) => `There are ${a} fish in a pond. ${b} swim away. How many fish are left?`,
+      questionKey: 'puzzles.wordFishPond',
       operation: 'subtract',
       items: ['fish'],
+      useItem: false,
     },
   ];
 
@@ -420,12 +460,13 @@ function generateWordProblem(range: DifficultyRange): Puzzle {
     a = answer + b;
   }
 
-  const question = problem.template(a, b, item);
   const options = generateOptions(answer, 4, 1, maxNum);
 
   return {
     type: 'word-problem',
-    question,
+    question: '', // Will be translated
+    questionKey: problem.questionKey,
+    questionParams: problem.useItem ? { a, b, item } : { a, b },
     options: options.map(String),
     correctAnswer: answer,
     topic: 'word-problems',

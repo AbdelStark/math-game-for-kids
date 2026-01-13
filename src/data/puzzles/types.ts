@@ -5,6 +5,9 @@ export interface BasePuzzle {
   type: PuzzleType;
   topic: Topic;
   correctAnswer: number | string;
+  // i18n support - questionKey + params for translation
+  questionKey?: string;
+  questionParams?: Record<string, string | number>;
 }
 
 export type PuzzleType =

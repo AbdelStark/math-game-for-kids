@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useTranslation } from 'react-i18next';
 import { Button, Panel, PokemonSprite, PokeballCount } from '../components/common';
 import { useGameStore } from '../stores/gameStore';
 import type { Pokemon } from '../data/pokemon';
@@ -11,6 +12,7 @@ type CaptureState = 'ready' | 'throwing' | 'caught';
 export function CaptureScreen() {
   const navigate = useNavigate();
   const location = useLocation();
+  const { t } = useTranslation();
   const pokemon = location.state?.pokemon as Pokemon | undefined;
 
   const pokeballs = useGameStore((s) => s.pokeballs);
@@ -52,7 +54,7 @@ export function CaptureScreen() {
   return (
     <div className="screen flex flex-col items-center justify-center p-6 safe-area-padding bg-gradient-to-b from-gba-dark to-gba-shadow">
       {/* Pokeball count */}
-      <div className="absolute top-4 right-4">
+      <div className="absolute top-4 end-4">
         <PokeballCount count={pokeballs} />
       </div>
 
@@ -74,16 +76,14 @@ export function CaptureScreen() {
             </motion.div>
 
             <Panel className="text-center">
-              <p className="font-pixel text-sm mb-2">A wild</p>
-              <p className="font-pixel text-lg text-pokemon-blue capitalize mb-2">
-                {pokemon.name}
+              <p className="font-pixel text-sm mb-2">
+                {t('capture.wildEncounter', { pokemon: pokemon.name })}
               </p>
-              <p className="font-pixel text-sm">appeared!</p>
             </Panel>
 
             <Panel className="text-center">
               <p className="font-pixel text-xs mb-3">
-                Cost: {pokemon.cost} Pokeballs
+                {t('capture.catchCost', { cost: pokemon.cost })}
               </p>
               <div className="flex gap-3">
                 <Button
@@ -91,15 +91,15 @@ export function CaptureScreen() {
                   onClick={handleThrow}
                   disabled={!canAfford}
                 >
-                  Throw!
+                  {t('capture.throwBall')}
                 </Button>
                 <Button variant="secondary" onClick={handleRunAway}>
-                  Run
+                  ←
                 </Button>
               </div>
               {!canAfford && (
                 <p className="font-pixel text-[10px] text-error mt-2">
-                  Not enough Pokeballs!
+                  {t('capture.notEnough')}
                 </p>
               )}
             </Panel>
@@ -163,15 +163,15 @@ export function CaptureScreen() {
                 animate={{ opacity: 1, y: 0 }}
                 className="font-pixel text-xl text-pokemon-yellow mb-2"
               >
-                Gotcha!
+                {t('capture.caught', { pokemon: pokemon.name })}
               </motion.h2>
               <motion.p
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ delay: 0.3 }}
-                className="font-pixel text-sm capitalize"
+                className="font-pixel text-sm"
               >
-                {pokemon.name} was caught!
+                {t('capture.addedToPokedex')}
               </motion.p>
             </Panel>
 
@@ -181,7 +181,7 @@ export function CaptureScreen() {
               transition={{ delay: 0.6 }}
             >
               <Button variant="primary" size="lg" onClick={handleContinue}>
-                Continue
+                {t('capture.continue')}
               </Button>
             </motion.div>
           </motion.div>
